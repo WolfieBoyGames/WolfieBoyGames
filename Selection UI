@@ -1,0 +1,130 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SelectionUI : MonoBehaviour
+{
+    public GameObject placeholderPrefab;
+    public GameObject placeholderObject;
+    public GameObject mainCam;
+    public Canvas canvas;
+    public GameObject selectMenu;
+    public Button upScroll;
+    public Button downScroll;
+    public Text categoryIndicator;
+    public Text previousIndicator;
+    public Text nextIndicator;
+    public string[] categories = new string[] { "Buildings", "Vehicles", "Terrain", "Props" }; //if i run into bugs again, check in inspector if array size has been set to 0 (try making private and then public again)
+    public int currentCategory = 1;
+    public int previousCategory = 0;
+    // Start is called before the first frame update
+    void Start()
+    {
+        if (mainCam.GetComponent<Placement>().useCategories == false)
+        {
+            mainCam.GetComponent<Placement>().options = Resources.LoadAll("Prefabs");
+            mainCam.GetComponent<Placement>().building = mainCam.GetComponent<Placement>().options[0];
+            mainCam.GetComponent<Placement>().pastBuilding = mainCam.GetComponent<Placement>().building;
+            foreach (var t in mainCam.GetComponent<Placement>().options)
+            {
+                mainCam.GetComponent<Placement>().optionsCount++;
+            }
+        }
+        else
+        {
+            mainCam.GetComponent<Placement>().options = Resources.LoadAll(categories[currentCategory]);
+            mainCam.GetComponent<Placement>().building = mainCam.GetComponent<Placement>().options[0];
+            mainCam.GetComponent<Placement>().pastBuilding = mainCam.GetComponent<Placement>().building;
+            foreach (var t in mainCam.GetComponent<Placement>().options)
+            {
+                mainCam.GetComponent<Placement>().optionsCount++;
+            }
+        }
+        upScroll.onClick.AddListener(ScrolledUp);
+        downScroll.onClick.AddListener(ScrolledDown);
+        categoryIndicator.text = categories[currentCategory];
+        categoryIndicator.text = categories[previousCategory];
+        //categoryIndicator.text = categories[currentCategory];
+        for (int i = 0; i < 10; i++)
+        {
+            // placeholderObject = Instantiate(placeholderPrefab, transform.position, Quaternion.identity);
+            //placeholderObject.transform.parent = canvas.transform;
+        }
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        if (Input.GetButtonDown("Open Build Menu"))
+        {
+            selectMenu.SetActive(true);
+            Destroy(mainCam.GetComponent<Placement>().preview);
+        }
+        if (Input.GetButtonUp("Open Build Menu"))
+        {
+            selectMenu.SetActive(false);
+        }
+    }
+    void ScrolledUp()
+    {
+        if (currentCategory > 0)
+        {
+            currentCategory--;
+        }
+        else
+        {
+            currentCategory = categories.Length - 1;
+
+        }
+        ///GOT CONFUSED ON THIS SO LEAVING IT FOR LATER
+        if (currentCategory > 1)
+        {
+            previousIndicator.text = categories[currentCategory - 1];
+        }
+        else if (currentCategory == 1)
+        {
+            previousIndicator.text = categories[categories.Length - 1];
+        }
+        else
+        {
+            previousIndicator.text = categories[categories.Length - 2];
+        }
+        categoryIndicator.text = categories[currentCategory];
+        if (mainCam.GetComponent<Placement>().useCategories == true)
+        {
+            mainCam.GetComponent<Placement>().options = Resources.LoadAll(categories[currentCategory]);
+            mainCam.GetComponent<Placement>().building = mainCam.GetComponent<Placement>().options[0];
+            mainCam.GetComponent<Placement>().pastBuilding = mainCam.GetComponent<Placement>().building;
+            foreach (var t in mainCam.GetComponent<Placement>().options)
+            {
+                mainCam.GetComponent<Placement>().optionsCount++;
+            }
+        }
+    }
+    void ScrolledDown()
+    {
+        if (currentCategory < categories.Length - 1)
+        {
+            currentCategory++;
+        }
+        else
+        {
+            currentCategory = 0;
+        }
+        categoryIndicator.text = categories[currentCategory];
+        if (mainCam.GetComponent<Placement>().useCategories == true)
+        {
+            mainCam.GetComponent<Placement>().options = Resources.LoadAll(categories[currentCategory]);
+            mainCam.GetComponent<Placement>().building = mainCam.GetComponent<Placement>().options[0];
+            mainCam.GetComponent<Placement>().pastBuilding = mainCam.GetComponent<Placement>().building;
+            foreach (var t in mainCam.GetComponent<Placement>().options)
+            {
+                mainCam.GetComponent<Placement>().optionsCount++;
+            }
+        }
+    }
+}
+
